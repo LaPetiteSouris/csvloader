@@ -40,13 +40,19 @@ func (w *PostgresWorker) inserttoDB(records []string) {
 	VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET value = $2
 	RETURNING id`
 	id := 0
-	err = db.QueryRow(sqlStatement, records[0], records[1]).Scan(&id)
+
+	// Parse array of records to argument
+	// interface{} has a different memory layout from a string
+	// as db.QueryRow below takes []interface{} as argument,
+	// the conversion must be done manually
+	recordArgs := make([]interface{}, len(records))
+	for i, val := range records {
+		recordArgs[i] = val
+	}
+	err = db.QueryRow(sqlStatement, recordArgs...).Scan(&id)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("New record ID is:", id)
-
-	fmt.Println("Successfully connected!")
 }
 
 //ExecuteTask load the record to Postgres

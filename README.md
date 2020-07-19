@@ -1,0 +1,1 @@
+POSTGRES_HOST="localhost" POSTGRES_PORT=5432 POSTGRES_USER="postgres" POSTGRES_PASS="admin" POSTGRES_DBNAME="ronin" go run *.go -filePath=sample.csv -query="INSERT INTO samples VALUES (\$1, \$2) ON CONFLICT (id) DO UPDATE SET value = \$2 RETURNING id"

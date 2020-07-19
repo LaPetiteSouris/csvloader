@@ -8,7 +8,7 @@ import (
 )
 
 // LoadRecordToDatabase take records and dump to Database
-func LoadRecordToDatabase(records []string) error {
+func LoadRecordToDatabase(records []string, args ...interface{}) error {
 	var wg sync.WaitGroup
 
 	// Initiate worker pool
@@ -20,7 +20,7 @@ func LoadRecordToDatabase(records []string) error {
 		workerArray = append(workerArray, w)
 	}
 	workerPool := &pool.WorkerPool{Wg: &wg, Pool: workerArray}
-	workerPool.ExecuteJob(records)
+	workerPool.ExecuteJob(records, args...)
 	wg.Wait()
 	return nil
 }

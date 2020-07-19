@@ -13,7 +13,7 @@ import (
 
 func main() {
 	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
-	filePath := flag.String("filePath", "", "path to csv")
+	filePath := flag.String("filePath", "./sample.csv", "path to csv")
 	flag.Parse()
 	// Open the file
 	csvfile, err := os.Open(*filePath)
@@ -36,7 +36,13 @@ func main() {
 			log.Fatal(err)
 		}
 		// TODO: load record to DB
-		LoadRecordToDatabase(record)
+		queryTemplate := `INSERT INTO samples
+		VALUES ($1, $2) 
+		ON CONFLICT (id) 
+			DO 
+				UPDATE SET value = $2
+		RETURNING id`
+		LoadRecordToDatabase(record, queryTemplate)
 		//fmt.Printf("id: %s val %s\n", record[0], record[1])
 	}
 }

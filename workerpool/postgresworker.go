@@ -21,7 +21,7 @@ type PostgresWorker struct {
 	ID string
 }
 
-func (w *PostgresWorker) inserttoDB(records []string) {
+func (w *PostgresWorker) inserttoDB(records []string, query string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -35,10 +35,6 @@ func (w *PostgresWorker) inserttoDB(records []string) {
 	if err != nil {
 		panic(err)
 	}
-	sqlStatement := `
-	INSERT INTO samples (id, value)
-	VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET value = $2
-	RETURNING id`
 	id := 0
 
 	// Parse array of records to argument
@@ -49,17 +45,22 @@ func (w *PostgresWorker) inserttoDB(records []string) {
 	for i, val := range records {
 		recordArgs[i] = val
 	}
-	err = db.QueryRow(sqlStatement, recordArgs...).Scan(&id)
+	err = db.QueryRow(query, recordArgs...).Scan(&id)
 	if err != nil {
 		panic(err)
 	}
 }
 
 //ExecuteTask load the record to Postgres
-func (w *PostgresWorker) ExecuteTask(records []string, wg *sync.WaitGroup) error {
+func (w *PostgresWorker) ExecuteTask(records []string, wg *sync.WaitGroup, args ...interface{}) error {
 	defer wg.Done()
 	// TODO: load records to database
-	w.inserttoDB(records)
+	argString := make([]string, len(args))
+	for i, v := range args {
+		argString[i] = fmt.Sprint(v)
+	}
+
+	w.inserttoDB(records, argString[0])
 	fmt.Printf("Worker's id %s , executing task, message is %s \n", w.ID, records)
 	return nil
 }

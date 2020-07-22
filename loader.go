@@ -8,14 +8,13 @@ import (
 )
 
 // LoadRecordToDatabase take records and dump to Database
-func LoadRecordToDatabase(records []string, args ...interface{}) error {
+func LoadRecordToDatabase(records []string, numberOfGoroutine int, args ...interface{}) error {
 	var wg sync.WaitGroup
 
 	// Initiate worker pool
-	numberOfWorkers := 3
 	// Use the corresponding worker type
 	workerArray := make([]pool.Worker, 0)
-	for i := 0; i < numberOfWorkers; i++ {
+	for i := 0; i < numberOfGoroutine; i++ {
 		w := &pool.PostgresWorker{ID: strconv.FormatInt(int64(i), 10)}
 		workerArray = append(workerArray, w)
 	}

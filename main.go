@@ -15,7 +15,7 @@ func main() {
 	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
 
 	filePath := flag.String("filePath", "./sample.csv", "path to csv")
-
+	numberOfGoroutine := flag.Int("nbrgoroutines", 3, "path to csv")
 	templateSQL := flag.String("query", "", "template query to run")
 	flag.Parse()
 	// Open the file
@@ -38,6 +38,6 @@ func main() {
 			log.Fatal(err)
 		}
 		// TODO: load record to DB
-		LoadRecordToDatabase(record, *templateSQL)
+		LoadRecordToDatabase(record, numberOfGoroutine, *templateSQL)
 	}
 }

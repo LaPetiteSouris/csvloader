@@ -12,7 +12,5 @@ RUN go build -mod=readonly -o csvloader
 FROM alpine:latest
 RUN apk add --no-cache --upgrade bash
 COPY --from=build-base /go/src/github.com/LaPetiteSouris/csvloader /usr/local/bin/csvloader
-#VOLUME "/tmp/liftbridge/liftbridge-default"
-#ENTRYPOINT ["liftbridge"]
 
 CMD ["sleep", "100d"]

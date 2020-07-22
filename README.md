@@ -65,7 +65,7 @@ Build with Docker
 ```bash
 docker build . -t csvloader
 # run the image in the directory where you can locate the csv and mount it to the container
-docker run exec -it csvloader --mount src=`pwd`,target=/csvloader
+docker run exec -it csvloader /bin/bash --mount src=`pwd`,target=/csvloader
 # inside your container
 cd /csvloader
 
